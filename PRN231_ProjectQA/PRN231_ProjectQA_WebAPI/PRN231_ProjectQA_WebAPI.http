@@ -1,0 +1,6 @@
+@PRN231_ProjectQA_WebAPI_HostAddress = http://localhost:5167
+
+GET {{PRN231_ProjectQA_WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
