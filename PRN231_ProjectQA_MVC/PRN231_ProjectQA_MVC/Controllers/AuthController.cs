@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using PRN231_ProjectQA_MVC.Models.Authen;
@@ -23,6 +26,69 @@ namespace PRN231_ProjectQA_MVC.Controllers
             _apiBaseUrl = configuration["ApiSettings:BaseUrl"];
             _httpClient.BaseAddress = new Uri(_apiBaseUrl);
         }
+
+        [HttpGet]
+        public IActionResult LoginWithGoogle()
+        {
+
+            var properties = new AuthenticationProperties
+            {
+
+                RedirectUri = Url.Action("GoogleResponse", "Auth", null, Request.Scheme)
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest("Failed to authenticate with Google.");
+            }
+            var claims = result.Principal.Claims.ToList();
+            // Lấy các giá trị cụ thể từ các claim theo loại
+            var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            // Lấy thông tin từ claims
+
+
+            LoginGoogleModel googleModel = new LoginGoogleModel
+            {
+                GoogleId = googleId,
+                Email = email,
+                Username = name,
+            };
+
+            // Construct the API URL if BaseAddress is already set in _httpClient
+            var apiUrl = $"{_httpClient.BaseAddress}/Auth/Login_Google";
+
+            // Send the request to the API
+            var response = await _httpClient.PostAsJsonAsync(apiUrl, googleModel);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // If the login is successful
+            if (response.IsSuccessStatusCode)
+            {
+                HandleSuccessfulLogin(responseContent);
+
+                // Redirect to the home page or the desired page after a successful login
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                // If login fails, redirect to the login page with an error message
+                ViewBag.ErrorMessage = "Login failed. Please try again.";
+                return View("Login");
+            }
+
+        }
         [HttpGet]
         public async Task<IActionResult> Login()
         {
@@ -33,13 +99,10 @@ namespace PRN231_ProjectQA_MVC.Controllers
             if (!string.IsNullOrEmpty(token))
             {
 
-                return RedirectToAction("HomeShop", "ShopProduct");
+                return RedirectToAction("Index", "Home");
             }
 
-            // get email from cookie if remember
-            var remember = Request.Cookies["Remember"];
-            ViewBag.Remember = remember;
-
+           
             return View();
         }
         [HttpPost]
@@ -72,7 +135,7 @@ namespace PRN231_ProjectQA_MVC.Controllers
                 }
 
                 // Redirect to the home page or the desired page after a successful login
-                return RedirectToAction("HomeShop", "ShopProduct");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -83,6 +146,126 @@ namespace PRN231_ProjectQA_MVC.Controllers
                 ViewBag.ErrorMessage = errorMessage;
                 return View("Login");
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> ForgotPassword(string Email)
+        {
+            var apiUrl = $"{_httpClient.BaseAddress}/Auth/ForgotPassword?email=" + Email;
+
+            // Create HttpContent with the email
+
+
+            // Send POST request to the API
+            var response = await _httpClient.PostAsync(apiUrl, null);
+            if (response.IsSuccessStatusCode)
+            {
+
+                ViewBag.SuccessMessage = "Your email has been sent successfully. Please check your inbox for further instructions.";
+                return View();
+            }
+            else
+            {
+                // Read the error message from the API response
+                string errorMessage = await GetResponeMessageAPI(response);
+
+                // Pass the error message to the view
+                ViewBag.ErrorMessage = errorMessage;
+                return View();
+            }
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string token)
+        {
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string token, string password)
+        {
+            var apiUrl = $"{_httpClient.BaseAddress}/Auth/ResetPassword";
+
+
+            ResetPassModel resetPass = new ResetPassModel
+            {
+                Token = token,
+                Password = password
+            };
+
+            var response = await _httpClient.PostAsJsonAsync(apiUrl, resetPass);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string message = await GetResponeMessageAPI(response);
+                ViewBag.SuccessMessage = message;
+                return View();
+            }
+            else
+            {
+                // Read the error message from the API response
+                string errorMessage = await GetResponeMessageAPI(response);
+
+                // Pass the error message to the view
+                ViewBag.ErrorMessage = errorMessage;
+                return View();
+            }
+
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> SignUp()
+        {
+            var token = Request.Cookies["AuthToken"];
+
+
+            if (!string.IsNullOrEmpty(token))
+            {
+
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignUp(string email, string username, string password)
+        {
+            SignUpModel signUpModel = new SignUpModel
+            {
+                Email = email,
+                Username = username,
+                Password = password
+            };
+
+            var apiUrl = $"{_httpClient.BaseAddress}/Auth/SignUp";
+
+            var response = await _httpClient.PostAsJsonAsync(apiUrl, signUpModel);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                HandleSuccessfulLogin(responseContent);
+
+
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                // Read the error message from the API response
+                string errorMessage = await GetResponeMessageAPI(response);
+
+                // Pass the error message to the view
+                ViewBag.ErrorMessage = errorMessage;
+                return View();
+            }
+
         }
         private string HandleSuccessfulLogin(string responseContent)
         {
