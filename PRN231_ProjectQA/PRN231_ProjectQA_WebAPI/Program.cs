@@ -24,11 +24,15 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 //AddScoped Repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 //AddScoped Service
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<CommentService>();
 
 
 builder.Services.AddDbContext<PRN231_ProjectQA_Data.DataContext.DatabaseContext>(options =>

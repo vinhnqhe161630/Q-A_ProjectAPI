@@ -12,12 +12,12 @@ namespace PRN231_ProjectQA_Data.Entities
     {
         public Post()
         {
-            Title1 = string.Empty;
+            Title = string.Empty;
             Content1 = string.Empty;
             User = new User();
         }
         [Key] public Guid Id { get; set; }
-        [Required] public string Title1 { get; set; }
+        [Required] public string Title { get; set; }
         [Required] public string Content1 { get; set; }
         public string? Image1 { get; set; }
         public string? Image2 { get; set; }

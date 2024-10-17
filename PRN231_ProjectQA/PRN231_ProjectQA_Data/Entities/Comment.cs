@@ -19,15 +19,16 @@ namespace PRN231_ProjectQA_Data.Entities
         [Key] public Guid Id { get; set; }
         [Required] public string Content { get; set; }
         [Required] public DateTime CreatedAt { get; set; }
+     
         [Required] public Guid PostId { get; set; }
         [ForeignKey("PostId")]
         [InverseProperty("Comments")]
-        public virtual Post Post { get; set; }
+        public virtual Post? Post { get; set; }
         [Required] public Guid UserId { get; set; }
         [ForeignKey("UserId")]
         [InverseProperty("Comments")]
-        public virtual User User { get; set; }
-
+        public virtual User? User { get; set; }
+        public virtual ICollection<AnswerComment>? Answers { get; set; }
         [Required] public CommentStatus Status { get; set; }
         public enum CommentStatus
         {

@@ -56,6 +56,7 @@ namespace PRN231_ProjectQA_Data.DataContext
         public DbSet<Post_Tag>? Post_Tags { get; set; }
         public DbSet<Like>? Likes { get; set; }
         public DbSet<Role>? Roles { get; set; }
+        public DbSet<AnswerComment>? AnswerComments { get; set; }
 
     }
 }

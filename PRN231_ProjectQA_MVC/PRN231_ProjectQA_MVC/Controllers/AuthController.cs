@@ -54,13 +54,14 @@ namespace PRN231_ProjectQA_MVC.Controllers
             var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
             var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-
+            var pictureUrl = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
             // Lấy thông tin từ claims
 
 
             LoginGoogleModel googleModel = new LoginGoogleModel
             {
                 GoogleId = googleId,
+                Img = pictureUrl,
                 Email = email,
                 Username = name,
             };
@@ -102,7 +103,7 @@ namespace PRN231_ProjectQA_MVC.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-           
+
             return View();
         }
         [HttpPost]
@@ -269,11 +270,6 @@ namespace PRN231_ProjectQA_MVC.Controllers
         }
         private string HandleSuccessfulLogin(string responseContent)
         {
-            // Parse JSON to get the token
-            var json = JObject.Parse(responseContent);
-            string token = json["token"].ToString();
-
-
             // Save the token in a cookie
             CookieOptions cookieOptions = new CookieOptions
             {
@@ -281,6 +277,17 @@ namespace PRN231_ProjectQA_MVC.Controllers
                 Expires = DateTime.Now.AddDays(3) // Set the expiration time for the cookie
             };
 
+            // Parse JSON to get the token
+            var json = JObject.Parse(responseContent);
+
+            string toke_Img = json["token"].ToString();
+            string[] split = toke_Img.Split(" ");   
+            string token = split[0];
+            if (split.Length > 1) {
+                Response.Cookies.Append("Img", split[1], cookieOptions);
+            }
+
+           
             Response.Cookies.Append("AuthToken", token, cookieOptions);
 
             var handler = new JwtSecurityTokenHandler();
@@ -290,6 +297,11 @@ namespace PRN231_ProjectQA_MVC.Controllers
                 var jwtToken = handler.ReadJwtToken(token);
                 var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
                 var role = roleClaim?.Value;
+
+              
+              
+
+
                 return role;
             }
             catch (SecurityTokenException ex)
@@ -320,6 +332,16 @@ namespace PRN231_ProjectQA_MVC.Controllers
             return message;
 
         }
-
+        public async Task<IActionResult> Logout()
+        {
+            // Remove the AuthToken cookie
+            Response.Cookies.Delete("AuthToken");
+            Response.Cookies.Delete("Img");
+            return RedirectToAction("Index", "Home");
+        }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

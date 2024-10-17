@@ -28,7 +28,7 @@ namespace PRN231_ProjectQA_MVC.Authorizations
                     if (expTime < DateTime.UtcNow)
                     {
                         // Token has expired
-                        context.Result = new RedirectToActionResult("Login", "Account", null);
+                        context.Result = new RedirectToActionResult("Login", "Auth", null);
                         return;
                     }
                 }

@@ -171,7 +171,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
             {
                 IActionResult response;
                 var user = _mapper.Map<User>(signUpModel);
-
+                user.Img = "./assets/images/boy.png";
                 var token = await _authService.CreateNewAccount(user);
                 response = Ok(new { token });
                 return response;

@@ -17,6 +17,7 @@ namespace PRN231_ProjectQA_Data.Entities
         [Required] public Guid RoleId { get; set; }
         public string? GoogleId { get; set; }
         public string? DOB { get; set; }
+        public string? Img { get; set; }
         public string? Token { get; set; }
         [Required] public UserStatus Status { get; set; }
         [ForeignKey("RoleId")] public virtual Role Role { get; set; } = null!;

@@ -22,6 +22,39 @@ namespace PRN231_ProjectQA_Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.AnswerComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Img")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AnswerComments");
+                });
+
             modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -34,6 +67,9 @@ namespace PRN231_ProjectQA_Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Img")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
@@ -96,7 +132,7 @@ namespace PRN231_ProjectQA_Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("Title1")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -177,6 +213,9 @@ namespace PRN231_ProjectQA_Data.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Img")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -198,6 +237,25 @@ namespace PRN231_ProjectQA_Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.AnswerComment", b =>
+                {
+                    b.HasOne("PRN231_ProjectQA_Data.Entities.Comment", "Comment")
+                        .WithMany("Answers")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PRN231_ProjectQA_Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.Comment", b =>
@@ -277,6 +335,11 @@ namespace PRN231_ProjectQA_Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.Comment", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("PRN231_ProjectQA_Data.Entities.Post", b =>

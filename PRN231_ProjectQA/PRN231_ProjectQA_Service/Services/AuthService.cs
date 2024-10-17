@@ -74,7 +74,7 @@ namespace PRN231_ProjectQA_Service.Services
 
 
 
-            return token;
+            return token + " "+user.Img;
         }
 
 
@@ -134,7 +134,7 @@ namespace PRN231_ProjectQA_Service.Services
 
         public void SendResetPasswordEmail(string userEmail, string resetToken)
         {
-            var resetUrl = $"https://localhost:7289/Auth/ResetPassword?token={resetToken}";
+            var resetUrl = $"https://localhost:7130/Auth/ResetPassword?token={resetToken}";
 
             var email = new EmailDto
             {

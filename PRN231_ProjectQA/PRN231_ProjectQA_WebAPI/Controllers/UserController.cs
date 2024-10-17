@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRN231_ProjectQA_Data.Entities;
 using PRN231_ProjectQA_Service.Services;
-using PRN231_ProjectQA_WebAPI.Models.Auth;
+using PRN231_ProjectQA_WebAPI.Models.User;
 using static PRN231_ProjectQA_Data.Entities.User;
 
 namespace PRN231_ProjectQA_WebAPI.Controllers
@@ -50,6 +50,31 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
             {
                 var userModel = _mapper.Map<UserModel>(user);
                 return userModel == null ? NotFound() : Ok(userModel);
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
+        [HttpGet("profile/{id}")]
+        //[Authorize]
+        public async Task<IActionResult> GetProfileUser(Guid id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user != null)
+            {
+                ProfileModel profileModel = new ProfileModel
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Img = user.Img,
+                    QAnswered = user.Posts.Count,
+                    QAsked = user.Comments.Count,   
+
+                };
+                return Ok(profileModel);
             }
             else
             {

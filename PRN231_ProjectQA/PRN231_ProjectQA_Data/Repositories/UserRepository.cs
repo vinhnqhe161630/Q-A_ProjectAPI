@@ -29,7 +29,7 @@ namespace PRN231_ProjectQA_Data.Repositories
         public async Task<User> GetUserById(Guid id)
         {
             var user = await _context.Users!
-                .Include(u => u.Role)
+                .Include(u => u.Role).Include(u => u.Comments).Include(u => u.Posts)
                 .FirstOrDefaultAsync(u => u.Id == id);
             return user;
         }

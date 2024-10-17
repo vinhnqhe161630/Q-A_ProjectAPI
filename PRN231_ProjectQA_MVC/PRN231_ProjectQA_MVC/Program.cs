@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
@@ -23,7 +25,9 @@ builder.Services.AddAuthentication(options =>
        options.Scope.Add("openid");
        options.Scope.Add("profile");
        options.Scope.Add("email");
+       options.ClaimActions.MapJsonKey("picture", "picture", "url");
        options.CallbackPath = "/signin-google";
+     
    });
 
 var app = builder.Build();
