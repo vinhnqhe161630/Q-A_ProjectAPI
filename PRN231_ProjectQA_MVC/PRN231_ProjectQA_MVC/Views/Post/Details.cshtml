@@ -1,0 +1,408 @@
+﻿@model PRN231_ProjectQA_MVC.Models.Post.PostDetailsModel
+@{
+    var commnets = ViewBag.Comments as List<PRN231_ProjectQA_MVC.Models.Comment.CommentModel>;
+}
+
+<style>
+    .image-container {
+        text-align: center; /* Center align the image inside this container */
+    }
+
+    .card-description {
+        padding-left: 30px;
+    }
+
+    .custom-image {
+        width: 300px; /* Sets a specific width for the images */
+        height: auto; /* Sets a specific height for the images */
+        padding: 10px; /* Adds padding inside the image container */
+
+        margin: 10px 0; /* Adds spacing between images and text */
+        border-radius: 5px; /* Rounds the corners of the images */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+    }
+
+        .custom-image:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+            transition: transform 0.3s ease; /* Smooth hover transition */
+        }
+
+</style>
+<body>
+    <div class="app">
+        <div class="header" id="header">
+            <div class="navbar fixed-top" id="navbar">
+                <div class="shelter">
+                    <a class="navbar__nav nav__logo nav__underline" href="index.html">
+                        <span class="link-title">
+                            <i class="fa fa-mars"></i>
+                            <span>K</span>ommunity
+                        </span>
+                    </a>
+                    <div class="navbar__nav navbar__nav-toggle">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                    <nav class="nav__items">
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Home")" class="nav__link">
+                                Home
+                            </a>
+
+                        </div>
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Post")" class="nav__link active">
+                                Answer
+                            </a>
+
+                        </div>
+                        <div class="navbar__nav nav__underline p__8">
+                            <div class="search">
+                                <input class="form-control" type="text" placeholder="Search for Questions">
+                            </div>
+                        </div>
+                        <div class="navbar__nav nav__underline p__8">
+                            <a href="@Url.Action("Ask", "Post")">  <button type="button" class="btn btn-blue ripple" id="modalBtn">Ask a Question <i class="fa fa-plus"></i></button></a>
+                        </div>
+
+                    </nav>
+                    @if (Context.Request.Cookies["AuthToken"] != null)
+                    {
+                        var profileImageEncoded = Context.Request.Cookies["Img"];
+                        var profileImage = !string.IsNullOrEmpty(profileImageEncoded) ?
+                        Uri.UnescapeDataString(profileImageEncoded) :
+                        "./assets/images/boy.png";
+
+                        <nav class="nav__items nav__items-right">
+                            <div class="navbar__nav pr-0 p__8 dropdown">
+                                <a href="#"><img src="@profileImage" class="avatar-sm" title="Profile"></a>
+                                <div class="dropdown-content">
+                                    <a href="@Url.Action("Logout", "Auth")">Log out <i class="fa fa-power-off"></i></a>
+                                    <a href="@Url.Action("Index", "Profile")">
+                                        Profile <i class="fa fa-user-o"></i>
+
+                                    </a>
+                                </div>
+                            </div>
+                        </nav>
+                    }
+                    else
+                    {
+                        <nav class="nav__items nav__items-right">
+                            <div class="navbar__nav pr-0 p__8">
+                                <a href="@Url.Action("SignUp", "Auth")">
+                                    <button type="button" class="btn btn-colorless" id="loginBtn">Sign Up <i class="fa fa-dashcube"></i></button>
+                                </a>
+                            </div>
+                            <div class="navbar__nav pr-0 p__8">
+                                <a href="@Url.Action("Login", "Auth")">
+                                    <button type="button" class="btn btn-colorless" id="loginBtn">Login <i class="fa fa-chevron-circle-right"></i></button>
+                                </a>
+                            </div>
+                        </nav>
+                    }
+                </div><!--end container-->
+            </div><!--end navbar-->
+        </div><!--end header-->
+        <section class="py-3">
+            <div class="shelter">
+                <div class="ddd mt-2">
+                    <div class="columns">
+                        <div class="col-7">
+                            <div class="card p-1">
+                                <div class="card-question">
+                                    <span>@Model.Title</span>
+                                </div>
+                                <div class="justify-content-start">
+                                    <div class="card-user">
+                                        <img class="avatar" src="@Model.UserImg">
+                                    </div>
+                                    <div class="card-user__job flex">
+                                        <span class="pl-2">@Model.Username</span>
+                                        <span>
+                                           
+                                            <small class="text-grey">07-08-2018</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-description">
+                                    <p>
+                                        @Model.Content1
+                                    </p>
+                                    @if(@Model.Image1 != null)
+                                    {
+                                         <div class="image-container">
+                                        <img src="@Model.Image1" class="custom-image" />
+                                    </div>
+                                    }
+                                   
+                                    <p>
+                                        @Model.Content2
+                                    </p>
+                                    @if (@Model.Image2 != null)
+                                    {
+                                        <div class="image-container">
+                                            <img src="@Model.Image2" class="custom-image" />
+
+
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-reaction justify-content-space-between">
+                                    <div class="card-answer">
+                                        <div class="text-grey mb-1">@Model.TotalComment Answers <span><small>@Model.CreatedAt.ToString().Substring(0, 10)</small></span></div>
+                                        <div class="card-btn ripple" id="cardBtn" title="Click to answer">
+                                            <i class="fa fa-pencil"></i>Answer
+                                        </div>
+
+                                    </div>
+                                </div>
+                                @*    Comment box *@
+                                <div class="answer-box" id="answerBox" style="display:none;">
+                                    <div class="justify-content-start">
+                                        @if (Context.Request.Cookies["AuthToken"] == null)
+                                        {
+                                            <p class="alert alert-warning">You must be logged in to post a comment.</p>
+                                        }
+                                        else
+                                        {
+                                            <form method="post" asp-action="Answer">
+                                                <input type="hidden" value="@Model.Id" name="postId" />
+                                                <input hidden value="@Model.Id" name="postId" />
+                                                <div>
+                                                    <img src="@Model.UserImg" class="avatar">
+                                                </div>
+                                                <div class="ml-1 answer-input">
+                                                    <textarea class="box" placeholder="Answer" name="content" required></textarea>
+                                                    <button class="button ripple" type="submit">Post</button>
+                                                </div>
+                                            </form>
+                                        }
+                                    </div>
+                                </div><!--end answer-box -->
+                            </div>
+
+                            <div class="answer-count">
+                                <h1>@Model.TotalComment Answers</h1>
+                            </div>
+                            @foreach (var comment in commnets)
+                            {
+                                <div class="mt-1 answer-block py-1">
+                                    <div class="justify-content-start">
+                                        <div class="card-user">
+                                            <img class="avatar" src="@comment.Img">
+                                        </div>
+                                        <div class="card-user__job flex">
+                                            <span class="pl-2">@comment.Username</span>
+                                            <span>
+                                                <small class="text-grey">At: @comment.CreatedAt.ToString().Substring(0, 10)</small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="answer-text">
+                                        <p>@comment.Content</p>
+                                    </div>
+                                    <div>
+                                        <div class="justify-content-start">
+                                            <div class="card-views pl-1">
+                                                <div class="card-reaction-icons" id="commentTag" title="click to add your comment">
+                                                    <i class="fa fa-comments-o"></i> Comment
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @* Answer box *@
+                                        <div class="comment-box" id="commentBox" style="display:none;">
+                                            <div class="justify-content-start">
+                                                @if (Context.Request.Cookies["AuthToken"] == null)
+                                                {
+                                                    <p class="alert alert-warning">You must be logged in to post a comment.</p>
+                                                }
+                                                else
+                                                {
+                                                    <form method="post" asp-action="Comment">
+                                                        <input hidden value="@comment.Id" name="commentId" />
+                                                        <input hidden value="@Model.Id" name="postId" />
+                                                        <div>
+                                                            <img src="@comment.Img" class="avatar">
+                                                        </div>
+                                                        <div class="ml-1 answer-input">
+                                                            <textarea class="box" required placeholder="post comment" name="content"></textarea>
+                                                            <button class="btn btn-blue ripple" type="submit">Post</button>
+                                                        </div>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </div>
+
+
+                                        @foreach (var answer in comment.answerModels)
+                                        {
+                                            <div class="comment-content">
+                                                <div class="justify-content-start">
+                                                    <span><img class="avatar-sm" src="@answer.Img"></span>
+                                                    <span class="commenter_name">@answer.Username</span>
+                                                </div>
+
+                                                <span>@answer.Content</span>
+                                            </div>
+                                        }
+
+
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                        <div class="col-5">
+                            <div class="lfa-card">
+                                <div class="lfa-card_child">
+                                    <div class="right-card fixed">
+                                        <span>Top Contributors</span>
+                                        <p>Lorem ipsum dolor sit amet consectetur.</p>
+                                        <div class="top-contributor">
+                                            <div>
+                                                <img class="avatar-sm" src="./assets/images/girl.png">
+                                            </div>
+                                            <span class="flex">JS Closure</span>
+                                            <div class="flex">
+                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                            </div>
+                                        </div>
+                                        <div class="top-contributor">
+                                            <div>
+                                                <img class="avatar-sm" src="./assets/images/boy.png">
+                                            </div>
+                                            <span class="flex">Camel casing in postgres</span>
+                                            <div class="flex">
+                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                            </div>
+                                        </div>
+                                        <div class="top-contributor">
+                                            <div>
+                                                <img class="avatar-sm" src="./assets/images/girl.png">
+                                            </div>
+                                            <span class="flex">Python Development</span>
+                                            <div class="flex">
+                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="shelter">
+                <div>
+                    <div class="columns">
+                        <div class="col-4"></div>
+                        @{
+                            var max = ViewBag.pageLength;
+                            var page = ViewBag.page;
+                            var next = page + 1;
+                            var pre = page - 1;
+
+                        }
+                        <div class="col-8">
+                            <div class="pagination">
+                                @if (page > 1)
+                                {
+                                    <a href="?page=@pre">&laquo;</a>
+
+                                }
+
+                                @for (int i = 1; i <= max; i++)
+                                {
+                                    @if (page == i)
+                                    {
+                                        <a href="?page=@i" class="activve">@i</a>
+                                    }
+                                    else
+
+                                    {
+                                        <a href="?page=@i">@i</a>
+                                    }
+
+                                }
+                                @if (page < max)
+                                {
+                                    <a href="?page=@next">&raquo;</a>
+
+                                }
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <p class="text-center">Ukaegbu Sullivan Wisdom...Cycle 35 &copy; 2018</p>
+            </div>
+        </section>
+        <section>
+            <div id="modal" class="modal">
+                <div>
+                    <div class="columns">
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="closeBtn">&times;</span>
+                                    <h2 class="text-blue">Ask Question</h2>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-row">
+                                            <label for="name">Title</label>
+                                            <input type="text" class="form-control" placeholder="title">
+                                        </div>
+                                        <div class="form-row">
+                                            <label for="name">Question</label>
+                                            <textarea class="textarea" rows="4" cols="50" placeholder="your question's body">    
+                                            </textarea>
+                                        </div>
+                                    </form>
+                                </div><!--end modal body-->
+                                <div class="modal-footer">
+                                    <button class="btn ripple btn-colorless">Ask <i class="fa fa-question"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/dropdown.js"></script>
+    <script src="./assets/js/modal.js"></script>
+    <script>
+        document.getElementById('commentTag').addEventListener('click', function () {
+            var commentBox = document.getElementById('commentBox');
+            if (commentBox.style.display === 'none') {
+                commentBox.style.display = 'block';
+            } else {
+                commentBox.style.display = 'none';
+            }
+        });
+    </script>
+    <script>
+
+        document.getElementById('cardBtn').addEventListener('click', function () {
+            var answerBox = document.getElementById('answerBox');
+            if (answerBox.style.display === 'none') {
+                answerBox.style.display = 'block';
+            } else {
+                answerBox.style.display = 'none';
+            }
+        });
+    </script>.
+</body>
+</html>
