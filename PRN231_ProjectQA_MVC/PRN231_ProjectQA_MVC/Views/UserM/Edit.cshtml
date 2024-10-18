@@ -1,0 +1,176 @@
+﻿@model PRN231_ProjectQA_MVC.Models.User.UserModel
+@{
+    ViewData["Title"] = "User Management";
+    var currentSort = ViewBag.sortOrder as string;
+    var searchString = ViewBag.searchString as string;
+    var roleFilter = ViewBag.roleFilter as string;
+    var statusFilter = ViewBag.statusFilter as string;
+}
+<style>
+
+
+    .custom-blue-btn {
+        background-color: #007bff; /* Replace with your desired blue color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        margin-left:500px;
+        margin-top:50px; /* Add some padding */
+    }
+
+        .custom-blue-btn:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+</style>
+<body>
+    <div class="app">
+        <div class="header" id="header">
+            <div class="navbar fixed-top" id="navbar">
+                <div class="shelter">
+                    <a class="navbar__nav nav__logo nav__underline" href="index.html">
+                        <span class="link-title">
+                            <i class="fa fa-mars"></i>
+                            <span>K</span>ommunity
+                        </span>
+                    </a>
+                    <div class="navbar__nav navbar__nav-toggle">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                    <nav class="nav__items">
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Home")" class="nav__link">
+                                Home
+                            </a>
+
+                        </div>
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Post")" class="nav__link active">
+                                Answer
+                            </a>
+
+                        </div>
+                        <form method="get">
+                            <div class="navbar__nav nav__underline p__8">
+                                <div class="search">
+                                    <input class="form-control" type="text" name="searchString" value="@ViewBag.searchString" placeholder="Search for Questions">
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <div class="navbar__nav nav__underline p__8">
+                            <a href="@Url.Action("Ask", "Post")">  <button type="button" class="btn btn-blue ripple" id="modalBtn">Ask a Question <i class="fa fa-plus"></i></button></a>
+                        </div>
+                    </nav>
+                    @if (Context.Request.Cookies["AuthToken"] != null)
+                    {
+                        var profileImageEncoded = Context.Request.Cookies["Img"];
+                        var profileImage = !string.IsNullOrEmpty(profileImageEncoded) ?
+                        Uri.UnescapeDataString(profileImageEncoded) :
+                        "./assets/images/boy.png";
+
+                        <nav class="nav__items nav__items-right">
+                            <div class="navbar__nav pr-0 p__8 dropdown">
+                                <a href="#"><img src="@profileImage" class="avatar-sm" title="Profile"></a>
+                                <div class="dropdown-content">
+                                    <a href="@Url.Action("Logout", "Auth")">Log out <i class="fa fa-power-off"></i></a>
+                                    <a href="@Url.Action("Index", "Profile")">
+                                        Profile <i class="fa fa-user-o"></i>
+
+                                    </a>
+                                </div>
+                            </div>
+                        </nav>
+                    }
+                    
+                </div><!--end container-->
+            </div><!--end navbar-->
+        </div><!--end header-->
+        <section class="py-3">
+            <div class="shelter">
+                <div class="ddd">
+                    <div class="columns">
+                        <div class="col-2">
+                            <div class="left-side">
+                                <h1>Activity</h1>
+                                <div class="left-side__item active2">
+                                    <a class="side-link" href="@Url.Action("Index", "UserM")"><span class="pr-1"><i class="fa fa-user"></i></span> User Management</a>
+                                </div>
+                                <div class="left-side__item">
+                                    <a class="side-link" href="@Url.Action("Index", "Post")"><span class="pr-1"><i class="fa fa-book"></i></span> Post Management</a>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+                                <h2>Edit User</h2>
+                                <form asp-action="ChangeStatus" method="post" onsubmit="return confirm('Are you sure you want to change the status?');" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <input type="hidden" name="status" value="@Model.Status" />
+                                    <div>
+                                        <button type="submit" class="btn custom-blue-btn">Change Status</button>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                            <form asp-action="Update" method="post" class="col-12" onsubmit="return confirm('Are you sure you want to save the changes?');">
+                                <input type="hidden" name="Id" value="@Model.Id" />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label >ID</label>
+                                            <input name="Id" type="text" value="@Model.Id" class="form-control" readonly />
+                                            
+                                        </div>
+                                        <div class="form-group">
+                                            <label >User Name</label>
+                                            <input name="UserName" type="text" value="@Model.Username" class="form-control" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input name="Email" type="text" value="@Model.Email" class="form-control" />
+                                            
+                                        </div>
+                                      
+                                    </div>
+
+                                    <div class="col-md-6">
+                                       
+                                        <div class="form-group">
+                                            <label>Role</label>
+                                            @Html.DropDownList("Role", new List<SelectListItem>
+                                            {
+                                            new SelectListItem { Text = "Select a role", Value = "", Disabled = true, Selected = (Model.RoleName == null) },
+                                            new SelectListItem { Text = "Admin", Value = "Admin", Selected = (Model.RoleName == "Admin") },
+                                            new SelectListItem { Text = "Guest", Value = "Guest", Selected = (Model.RoleName == "Guest") },
+                                            new SelectListItem { Text = "User", Value = "User", Selected = (Model.RoleName == "User") }
+                                            }, new { @class = "form-control" })
+                                            <span class="text-danger"></span>
+                                            <span class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Status</label>
+                                            <input name="Status" type="text" value="@Model.Status" class="form-control" readonly />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn custom-blue-btn">Save</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+       
+    </div>
+
+
+</body>
+</html>

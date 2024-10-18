@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
+using PRN231_ProjectQA_MVC.Authorizations;
 
 namespace PRN231_ProjectQA_MVC.Controllers
 {
@@ -77,7 +78,13 @@ namespace PRN231_ProjectQA_MVC.Controllers
             // If the login is successful
             if (response.IsSuccessStatusCode)
             {
-                HandleSuccessfulLogin(responseContent);
+                var role = HandleSuccessfulLogin(responseContent);
+
+
+                if (role == "Admin")
+                {
+                    return RedirectToAction("Index", "UserM");
+                }
 
                 // Redirect to the home page or the desired page after a successful login
                 return RedirectToAction("Index", "Home");
@@ -132,7 +139,7 @@ namespace PRN231_ProjectQA_MVC.Controllers
 
                 if (role == "Admin")
                 {
-                    return RedirectToAction("Index", "User");
+                    return RedirectToAction("Index", "UserM");
                 }
 
                 // Redirect to the home page or the desired page after a successful login
@@ -332,6 +339,9 @@ namespace PRN231_ProjectQA_MVC.Controllers
             return message;
 
         }
+
+       
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             // Remove the AuthToken cookie

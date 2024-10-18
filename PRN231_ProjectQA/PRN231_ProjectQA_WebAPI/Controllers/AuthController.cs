@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRN231_ProjectQA_Data.Entities;
@@ -112,6 +113,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
         }
 
         [HttpPost("ChangePassword")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {
             try

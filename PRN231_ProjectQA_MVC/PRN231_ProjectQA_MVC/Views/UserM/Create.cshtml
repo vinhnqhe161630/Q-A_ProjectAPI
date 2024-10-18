@@ -1,0 +1,159 @@
+﻿@model PRN231_ProjectQA_MVC.Models.User.AddUserModel
+@{
+    ViewData["Title"] = "User Management";
+    var currentSort = ViewBag.sortOrder as string;
+    var searchString = ViewBag.searchString as string;
+    var roleFilter = ViewBag.roleFilter as string;
+    var statusFilter = ViewBag.statusFilter as string;
+}
+<style>
+
+
+    .custom-blue-btn {
+        background-color: #007bff; /* Replace with your desired blue color */
+        color: white; /* Text color */
+        border: none; /* Remove border */
+        margin-left: 500px;
+        margin-top: 50px; /* Add some padding */
+    }
+
+        .custom-blue-btn:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+</style>
+<body>
+    <div class="app">
+        <div class="header" id="header">
+            <div class="navbar fixed-top" id="navbar">
+                <div class="shelter">
+                    <a class="navbar__nav nav__logo nav__underline" href="index.html">
+                        <span class="link-title">
+                            <i class="fa fa-mars"></i>
+                            <span>K</span>ommunity
+                        </span>
+                    </a>
+                    <div class="navbar__nav navbar__nav-toggle">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                    <nav class="nav__items">
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Home")" class="nav__link">
+                                Home
+                            </a>
+
+                        </div>
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Post")" class="nav__link active">
+                                Answer
+                            </a>
+
+                        </div>
+                        <form method="get">
+                            <div class="navbar__nav nav__underline p__8">
+                                <div class="search">
+                                    <input class="form-control" type="text" name="searchString" value="@ViewBag.searchString" placeholder="Search for Questions">
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <div class="navbar__nav nav__underline p__8">
+                            <a href="@Url.Action("Ask", "Post")">  <button type="button" class="btn btn-blue ripple" id="modalBtn">Ask a Question <i class="fa fa-plus"></i></button></a>
+                        </div>
+                    </nav>
+                    @if (Context.Request.Cookies["AuthToken"] != null)
+                    {
+                        var profileImageEncoded = Context.Request.Cookies["Img"];
+                        var profileImage = !string.IsNullOrEmpty(profileImageEncoded) ?
+                        Uri.UnescapeDataString(profileImageEncoded) :
+                        "./assets/images/boy.png";
+
+                        <nav class="nav__items nav__items-right">
+                            <div class="navbar__nav pr-0 p__8 dropdown">
+                                <a href="#"><img src="@profileImage" class="avatar-sm" title="Profile"></a>
+                                <div class="dropdown-content">
+                                    <a href="@Url.Action("Logout", "Auth")">Log out <i class="fa fa-power-off"></i></a>
+                                    <a href="@Url.Action("Index", "Profile")">
+                                        Profile <i class="fa fa-user-o"></i>
+
+                                    </a>
+                                </div>
+                            </div>
+                        </nav>
+                    }
+
+                </div><!--end container-->
+            </div><!--end navbar-->
+        </div><!--end header-->
+        <section class="py-3">
+            <div class="shelter">
+                <div class="ddd">
+                    <div class="columns">
+                        <div class="col-2">
+                            <div class="left-side">
+                                <h1>Activity</h1>
+                                <div class="left-side__item active2">
+                                    <a class="side-link" href="@Url.Action("Index", "UserM")"><span class="pr-1"><i class="fa fa-user"></i></span> User Management</a>
+                                </div>
+                                <div class="left-side__item">
+                                    <a class="side-link" href="@Url.Action("Index", "Post")"><span class="pr-1"><i class="fa fa-book"></i></span> Post Management</a>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <form asp-action="Add" method="post" onsubmit="return confirm('Are you sure you want to create ?');">
+                                <div class="validation-summary">
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+
+                                        <div class="form-group">
+                                            <label asp-for="Username" ></label>
+                                            <input name="UserName" class="form-control" />
+                                            <span asp-validation-for="Username" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="Email" ></label>
+                                            <input name="Email" class="form-control" />
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label asp-for="Password" ></label>
+                                            <input name="Password" class="form-control" />
+                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                      
+                                        <div class="form-group">
+                                            <label asp-for="RoleName" ></label>
+                                            <select name="RoleName" class="form-control">
+                                                <option value="Admin">Admin</option>
+                                                <option value="User">User</option>
+                                                <option value="Manager">Manager</option>
+                                            </select>
+                                            <span asp-validation-for="RoleName" class="text-danger"></span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn custom-blue-btn">Create</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+
+</body>
+</html>

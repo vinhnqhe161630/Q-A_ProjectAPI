@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PRN231_ProjectQA_MVC.Models.Post.PostModel>
+﻿@model PRN231_ProjectQA_MVC.Models.Post.PostDetailsModel
 <body>
     <style>
         body {
@@ -174,29 +174,35 @@
                             <div class="card p-1 mt-2">
                                 <span><i class="fa fa-user-circle card-btn"></i> Ask a question</span>
                             </div>
-                            <form asp-action="Ask" method="post" enctype="multipart/form-data">
+                            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label for="Title">Title</label>
-                                    <input type="text" class="form-control" id="Title" name="title" required>
+                                    <input type="text" class="form-control" id="Title" value="@Model.Title" name="title" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="Content1">What are the details of your problem?</label>
-                                    <textarea class="form-control" id="Content1" name="content1" rows="5" required></textarea>
+                                    <textarea class="form-control" id="Content1" name="content1" rows="5" required>@Model.Content1</textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="Img1">Image description</label>
-                                    <input type="file" class="form-control-file" id="Img1" name="img1">
+                                    @if (!string.IsNullOrEmpty(@Model.Image1))
+                                    {
+                                        <img src="@Model.Image1" alt="Current Image" style="max-width: 100%; height: auto;" /> <!-- Hiển thị hình ảnh nếu là hình ảnh -->
+                                    }
                                 </div>
                                 <div class="form-group">
                                     <label for="Content2">What did you try and what were you expecting?</label>
-                                    <textarea class="form-control" id="Content2" name="content2" rows="5"></textarea>
+                                    <textarea class="form-control" id="Content2" name="content2" rows="5">@Model.Content2 </textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="Img2">Image description</label>
-                                    <input type="file" class="form-control-file" id="Img2" name="img2">
+                                    @if (!string.IsNullOrEmpty(@Model.Image2))
+                                    {
+                                        <img src="@Model.Image2" alt="Current Image" style="max-width: 100%; height: auto;" /> <!-- Hiển thị hình ảnh nếu là hình ảnh -->
+                                    }
                                 </div>
-                               
-                                <button type="submit" class="submit-btn">Post Your Question</button>
+                                <input hidden value="@Model.Id" name="id"/>
+                                 <input hidden value="@Model.Image1" name="img1"/>
+                                <input hidden value="@Model.Image2" name="img2" />
+                                <button type="submit" class="submit-btn">Edit Your Question</button>
                             </form>
 
                         </div>
@@ -205,11 +211,9 @@
             </div>
 
             <div>
-
-
             </div>
         </section>
-     
+
     </div>
     <section>
         <div id="modal" class="modal">

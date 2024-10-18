@@ -24,7 +24,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
 
         //Get all users
         [HttpGet]
-        //[Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -41,8 +41,8 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
         }
         //Get user by id
         [HttpGet("{id}")]
-        //[Authorize]
-        //[Authorize(Roles = "Admin")]
+        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userService.GetUserById(id);
@@ -58,7 +58,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
 
         }
         [HttpGet("profile/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetProfileUser(Guid id)
         {
             var user = await _userService.GetUserById(id);
@@ -84,7 +84,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
         }
         // Change status User
         [HttpPut("{id:guid}/{status:int}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserStatus(Guid id, UserStatus status)
         {
             try
@@ -100,7 +100,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
         }
         //// Update User
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(Guid id, UpdateUserModel userModel)
         {
             if (!ModelState.IsValid)
@@ -119,7 +119,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
 
         //Add new user
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddNewUser(AddUserModel userModel)
         {
             if (!ModelState.IsValid)

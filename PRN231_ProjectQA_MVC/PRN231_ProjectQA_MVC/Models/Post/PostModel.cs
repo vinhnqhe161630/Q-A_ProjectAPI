@@ -8,6 +8,7 @@
         public string UserImg { get; set; }
         public string? CreatedAt { get; set; }
         public string? UpdatedAt { get; set; }
+        public Guid UserId { get; set; }
         public string? Username { get; set; }
         public int TotalComment { get; set; }
         

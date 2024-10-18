@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -29,11 +30,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
                 foreach (var post in posts)
                 {
                     PostModel postListModel = _mapper.Map<PostModel>(post);
-                    postListModel.Username = post.User.Username;
-                    postListModel.UserImg = post.User.Img;
-
-
-                    postListModel.TotalComment = postListModels.Count;
+                  
                     postListModels.Add(postListModel);
                 }
 
@@ -66,6 +63,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddPost([FromBody] AddPostModel addPostModel)
         {
             try
@@ -82,8 +80,25 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
 
 
         }
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePost(Guid id,[FromBody] AddPostModel updatePostModel)
+        {
+            try
+            {
+                var post = _mapper.Map<Post>(updatePostModel);
+                post.Id = id;
+                await _postService.UpdatePost(post);
+                return Ok("Update Successfull !");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }   
 
         [HttpGet("getbyuserId/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetPostsByUser(Guid userId)
         {
             try
@@ -109,19 +124,20 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
 
 
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeletePost(Guid id)
-        //{
-        //    try
-        //    {
-        //        await _postService.DeletePost(id);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}  
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeletePost(Guid id)
+        {
+            try
+            {
+                await _postService.DeletePost(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
 
 

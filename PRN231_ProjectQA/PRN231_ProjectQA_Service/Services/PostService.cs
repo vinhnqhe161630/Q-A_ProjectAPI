@@ -50,6 +50,10 @@ namespace PRN231_ProjectQA_Service.Services
 
             return await postRepository.GetPostsByUser(userId);
         }
+        public async Task UpdatePost(Post post)
+        {
+            await postRepository.UpdatePost(post);
+        }
 
     }
 }

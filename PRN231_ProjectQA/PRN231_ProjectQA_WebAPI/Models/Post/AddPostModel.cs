@@ -2,6 +2,7 @@
 {
     public class AddPostModel
     {
+      
         public string Title { get; set; } = string.Empty;
         public string Content1 { get; set; } = string.Empty;
         public string? Content2 { get; set; } = string.Empty;

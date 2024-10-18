@@ -27,6 +27,18 @@
             transition: transform 0.3s ease; /* Smooth hover transition */
         }
 
+    .card-question {
+        position: relative; /* Set relative position to parent for absolute positioning inside */
+        padding: 10px; /* Add padding to the card as needed */
+    }
+
+    .card-hide {
+        position: absolute; /* Position the icon absolutely within the card */
+        top: 10px; /* Position it from the top */
+        right: 10px; /* Position it from the right */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
 </style>
 <body>
     <div class="app">
@@ -111,7 +123,37 @@
                             <div class="card p-1">
                                 <div class="card-question">
                                     <span>@Model.Title</span>
+                                    @if (ViewBag.userId == @Model.UserId.ToString())
+                                    {
+                                        <div class="card-hide" id="card-hide">
+                                            <i class="fa fa-ellipsis-h"></i>
+                                        </div>
+                                    }
                                 </div>
+                                @if (ViewBag.userId == @Model.UserId.ToString())
+                                {
+                                    <div class="card-drop" id="card-drop" style="display: none;">
+                                        <a class="" href="@Url.Action("Edit", "Post", new { id = @Model.Id })"><i class="fa fa-pencil"></i> Edit Question</a>
+                                        <a class="delete-link" href="@Url.Action("Delete", "Post", new { id = @Model.Id })">
+                                            <i class="fa fa-times"></i> Delete Question
+                                        </a>
+                                    </div>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const deleteLinks = document.querySelectorAll('.delete-link');
+
+                                            deleteLinks.forEach(function (link) {
+                                                link.addEventListener('click', function (event) {
+                                                    const confirmed = confirm('Are you sure you want to delete this question?');
+                                                    if (!confirmed) {
+                                                        event.preventDefault();
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                }
                                 <div class="justify-content-start">
                                     <div class="card-user">
                                         <img class="avatar" src="@Model.UserImg">
@@ -119,7 +161,7 @@
                                     <div class="card-user__job flex">
                                         <span class="pl-2">@Model.Username</span>
                                         <span>
-                                           
+
                                             <small class="text-grey">07-08-2018</small>
                                         </span>
                                     </div>
@@ -128,13 +170,13 @@
                                     <p>
                                         @Model.Content1
                                     </p>
-                                    @if(@Model.Image1 != null)
+                                    @if (@Model.Image1 != null)
                                     {
-                                         <div class="image-container">
-                                        <img src="@Model.Image1" class="custom-image" />
-                                    </div>
+                                        <div class="image-container">
+                                            <img src="@Model.Image1" class="custom-image" />
+                                        </div>
                                     }
-                                   
+
                                     <p>
                                         @Model.Content2
                                     </p>
@@ -204,14 +246,14 @@
                                     <div>
                                         <div class="justify-content-start">
                                             <div class="card-views pl-1">
-                                                <div class="card-reaction-icons" id="commentTag" title="click to add your comment">
+                                                <div class="card-reaction-icons" id="commentTag-@comment.Id" data-item-id="@comment.Id" title="click to add your comment">
                                                     <i class="fa fa-comments-o"></i> Comment
                                                 </div>
                                             </div>
                                         </div>
 
                                         @* Answer box *@
-                                        <div class="comment-box" id="commentBox" style="display:none;">
+                                        <div class="comment-box" id="commentBox-@comment.Id" style="display:none;">
                                             <div class="justify-content-start">
                                                 @if (Context.Request.Cookies["AuthToken"] == null)
                                                 {
@@ -260,32 +302,32 @@
                                 <div class="lfa-card_child">
                                     <div class="right-card fixed">
                                         <span>Top Contributors</span>
-                                        <p>Lorem ipsum dolor sit amet consectetur.</p>
+                                        
                                         <div class="top-contributor">
                                             <div>
-                                                <img class="avatar-sm" src="./assets/images/girl.png">
+                                                <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocJoCoOilyj6pXBYbLrB8qDqSoMIzNCew2t5b0S7rr_eumT-mCI=s96-c">
                                             </div>
-                                            <span class="flex">JS Closure</span>
+                                            <span class="flex">Vinh Quang</span>
                                             <div class="flex">
-                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                                <span> <i class="fa fa-comment-o"></i> 30</span>
                                             </div>
                                         </div>
                                         <div class="top-contributor">
                                             <div>
-                                                <img class="avatar-sm" src="./assets/images/boy.png">
+                                                <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocJhfQvteYErVi6hxFWz7KRgLbbQpidAdAuI-b38E0WYR_qg2w=s96-c">
                                             </div>
-                                            <span class="flex">Camel casing in postgres</span>
+                                            <span class="flex">Nguyễn Vinh</span>
                                             <div class="flex">
-                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                                <span> <i class="fa fa-comment-o"></i> 21</span>
                                             </div>
                                         </div>
                                         <div class="top-contributor">
                                             <div>
-                                                <img class="avatar-sm" src="./assets/images/girl.png">
+                                                <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocK7O4mpbea8caWIxtBzG5Ll_qoTtvd4MHUIxyZWnQiKlr0d7ONb=s96-c">
                                             </div>
-                                            <span class="flex">Python Development</span>
+                                            <span class="flex">Nguyễn An</span>
                                             <div class="flex">
-                                                <span> <i class="fa fa-comment-o"></i> 439</span>
+                                                <span> <i class="fa fa-comment-o"></i> 12</span>
                                             </div>
                                         </div>
                                     </div>
@@ -378,14 +420,49 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> 
     </div>
     <script src="./assets/js/main.js"></script>
     <script src="./assets/js/dropdown.js"></script>
     <script src="./assets/js/modal.js"></script>
+   
+
+
     <script>
-        document.getElementById('commentTag').addEventListener('click', function () {
-            var commentBox = document.getElementById('commentBox');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy tất cả các phần tử .card-hide
+            const cardHides = document.querySelectorAll('.card-reaction-icons');
+
+
+
+            // Xử lý cho các phần tử còn lại
+            cardHides.forEach(function (element, index) {
+                if (index > 0) { // Bỏ qua phần tử đầu tiên
+                    element.addEventListener('click', function () {
+                        const itemId = this.getAttribute('data-item-id');
+                        const dropdown = document.getElementById('commentBox-' + itemId);
+
+
+
+                        // Toggle hiển thị của dropdown cho các phần tử còn lại
+                        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                            dropdown.style.display = 'block';
+
+                        } else {
+                            dropdown.style.display = 'none';
+
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+
+
+    <script>
+        document.getElementById('card-hide').addEventListener('click', function () {
+            var commentBox = document.getElementById('card-drop');
             if (commentBox.style.display === 'none') {
                 commentBox.style.display = 'block';
             } else {

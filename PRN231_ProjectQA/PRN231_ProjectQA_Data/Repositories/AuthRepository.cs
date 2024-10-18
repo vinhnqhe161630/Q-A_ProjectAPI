@@ -107,5 +107,6 @@ namespace PRN231_ProjectQA_Data.Repositories
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+
     }
 }

@@ -15,6 +15,7 @@ namespace PRN231_ProjectQA_Data.IRepositories
         public Task AddNewPost(Post post);
       
         public Task DeletePost(Guid id);
+        public Task UpdatePost(Post post);  
      
 
     }

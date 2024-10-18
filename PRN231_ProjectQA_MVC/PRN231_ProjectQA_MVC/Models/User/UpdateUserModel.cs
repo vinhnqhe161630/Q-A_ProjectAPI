@@ -1,11 +1,10 @@
-﻿namespace PRN231_ProjectQA_WebAPI.Models.User
+﻿namespace PRN231_ProjectQA_MVC.Models.User
 {
-    public class AddUserModel
+    public class UpdateUserModel
     {
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-      
+       
         public string RoleName { get; set; }
     }
 }

@@ -1,0 +1,290 @@
+﻿@model IEnumerable<PRN231_ProjectQA_MVC.Models.User.UserModel>
+@{
+    ViewData["Title"] = "User Management";
+    var currentSort = ViewBag.sortOrder as string;
+    var searchString = ViewBag.searchString as string;
+    var roleFilter = ViewBag.roleFilter as string;
+    var statusFilter = ViewBag.statusFilter as string;
+}
+<style>
+
+
+    /* Table Styles */
+    .table {
+        width: 100%; /* Full width */
+        margin: 20px 0; /* Spacing around the table */
+        border-collapse: collapse; /* Merge borders */
+        background-color: #ffffff; /* Background color for the table */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+
+        .table th {
+            background-color: #007bff; /* Header background color */
+            color: white; /* Header text color */
+            padding: 12px; /* Padding for header cells */
+            text-align: left; /* Align text to the left */
+        }
+
+        .table td {
+            padding: 10px; /* Padding for data cells */
+            border-bottom: 1px solid #dee2e6; /* Border between rows */
+            vertical-align: middle; /* Vertically center content */
+        }
+
+        .table tr:hover {
+            background-color: #f1f1f1; /* Highlight row on hover */
+        }
+
+        .table .btn {
+            margin-right: 5px; /* Margin between action buttons */
+            border-radius: 5px; /* Rounded corners for buttons */
+        }
+
+    .id-column {
+        width: 500px; /* Set the width for the ID column */
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+</style>
+<body>
+    <div class="app">
+        <div class="header" id="header">
+            <div class="navbar fixed-top" id="navbar">
+                <div class="shelter">
+                    <a class="navbar__nav nav__logo nav__underline" href="index.html">
+                        <span class="link-title">
+                            <i class="fa fa-mars"></i>
+                            <span>K</span>ommunity
+                        </span>
+                    </a>
+                    <div class="navbar__nav navbar__nav-toggle">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                    <nav class="nav__items">
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Home")" class="nav__link">
+                                Home
+                            </a>
+
+                        </div>
+                        <div class="navbar__nav nav__underline">
+                            <a href="@Url.Action("Index", "Post")" class="nav__link active">
+                                Answer
+                            </a>
+
+                        </div>
+                        <form method="get">
+                            <div class="navbar__nav nav__underline p__8">
+                                <div class="search">
+                                    <input class="form-control" type="text" name="searchString" value="@ViewBag.searchString" placeholder="Search for Questions">
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <div class="navbar__nav nav__underline p__8">
+                            <a href="@Url.Action("Ask", "Post")">  <button type="button" class="btn btn-blue ripple" id="modalBtn">Ask a Question <i class="fa fa-plus"></i></button></a>
+                        </div>
+                    </nav>
+                    @if (Context.Request.Cookies["AuthToken"] != null)
+                    {
+                        var profileImageEncoded = Context.Request.Cookies["Img"];
+                        var profileImage = !string.IsNullOrEmpty(profileImageEncoded) ?
+                        Uri.UnescapeDataString(profileImageEncoded) :
+                        "./assets/images/boy.png";
+
+                        <nav class="nav__items nav__items-right">
+                            <div class="navbar__nav pr-0 p__8 dropdown">
+                                <a href="#"><img src="@profileImage" class="avatar-sm" title="Profile"></a>
+                                <div class="dropdown-content">
+                                    <a href="@Url.Action("Logout", "Auth")">Log out <i class="fa fa-power-off"></i></a>
+                                    <a href="@Url.Action("Index", "Profile")">
+                                        Profile <i class="fa fa-user-o"></i>
+
+                                    </a>
+                                </div>
+                            </div>
+                        </nav>
+                    }
+                   
+                </div><!--end container-->
+            </div><!--end navbar-->
+        </div><!--end header-->
+        <section class="py-3">
+            <div class="shelter">
+                <div class="ddd">
+                    <div class="columns">
+                        <div class="col-2">
+                            <div class="left-side">
+                                <h1>Activity</h1>
+                                <div class="left-side__item active2">
+                                    <a class="side-link" href="@Url.Action("Index", "UserM")"><span class="pr-1"><i class="fa fa-user"></i></span> User Management</a>
+                                </div>
+                                <div class="left-side__item">
+                                    <a class="side-link" href="@Url.Action("Index", "Post")"><span class="pr-1"><i class="fa fa-book"></i></span> Post Management</a>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <h1>User Management</h1>
+                            <a href="@Url.Action("Create")" class="btn btn-primary">Create</a>
+                            <form method="get" class="mb-3">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" name="searchString" value="@searchString" placeholder="Search by Username or Email" class="form-control" />
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="d-flex">
+                                            @Html.DropDownList("roleFilter", new List<SelectListItem>
+                                            {
+                                            new SelectListItem { Text = "Select a role", Value = "", Disabled = true, Selected = string.IsNullOrEmpty(roleFilter) },
+                                            new SelectListItem { Text = "Admin", Value = "Admin", Selected = roleFilter == "Admin" },
+                                            new SelectListItem { Text = "Guest", Value = "Guest", Selected = roleFilter == "Guest" },
+                                            new SelectListItem { Text = "User", Value = "User", Selected = roleFilter == "User" }
+                                            }, "Role", new { @class = "form-control me-2" })
+
+                                            @Html.DropDownList("statusFilter", new List<SelectListItem>
+                                            {
+                                            new SelectListItem { Text = "Select a status", Value = "", Disabled = true, Selected = string.IsNullOrEmpty(statusFilter) },
+                                            new SelectListItem { Text = "Active", Value = "Active", Selected = statusFilter == "Active" },
+                                            new SelectListItem { Text = "Inactive", Value = "Inactive", Selected = statusFilter == "Inactive" }
+                                            }, "Status", new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="id-column">ID</th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Username)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Email)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.RoleName)
+                                        </th>
+                                        <th>
+                                            @Html.DisplayNameFor(model => model.Status)
+                                        </th>
+
+
+                                        <th class="text-secondary opacity-7"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Example Row -->
+                                    <tr>
+                                        @foreach (var item in Model)
+                                        {
+                                        <tr>
+                                            <td>
+
+                                                    @Html.DisplayFor(modelItem => item.Id)
+
+
+                                            </td>
+                                            <td>
+
+                                                    @Html.DisplayFor(modelItem => item.Username)
+
+
+                                            </td>
+                                            <td>
+                                                    @Html.DisplayFor(modelItem => item.Email)
+                                            </td>
+                                            <td>
+                                                    @Html.DisplayFor(modelItem => item.RoleName)
+
+                                            </td>
+                                            <td>
+                                                    @if (item.Status == "Active")
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.Status)
+                                                    }
+                                                    else if (item.Status == "Inactive")
+                                                    {
+                                                        @Html.DisplayFor(modelItem => item.Status)
+                                                    }
+                                            </td>
+
+
+                                            <td>
+                                                <a href="@Url.Action("Edit", "UserM", new { id = item.Id })" class="btn btn-warning btn-sm">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        }
+                                <td>
+                                </td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="shelter">
+                <div>
+                    <div class="columns">
+                        <div class="col-4"></div>
+                        @{
+                            var max = ViewBag.pageLength;
+                            var page = ViewBag.page;
+                            var next = page + 1;
+                            var pre = page - 1;
+
+                        }
+                        <div class="col-8">
+                            <div class="pagination">
+                                @if (page > 1)
+                                {
+                                    <a href="?page=@pre&search=@ViewBag.searchString">&laquo;</a>
+
+                                }
+
+                                @for (int i = 1; i <= max; i++)
+                                {
+                                    @if (page == i)
+                                    {
+                                        <a href="?page=@i" class="activve">@i</a>
+                                    }
+                                    else
+
+                                    {
+                                        <a href="?page=@i">@i</a>
+                                    }
+
+                                }
+                                @if (page < max)
+                                {
+                                    <a href="?page=@next">&raquo;</a>
+
+                                }
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+
+</body>
+</html>

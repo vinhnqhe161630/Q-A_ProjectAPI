@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using PRN231_ProjectQA_MVC.Authorizations;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
@@ -29,7 +30,17 @@ builder.Services.AddAuthentication(options =>
        options.CallbackPath = "/signin-google";
      
    });
+builder.Services.AddHttpContextAccessor();
 
+// Register the HttpClient service
+builder.Services.AddHttpClient();
+
+// Register AuthTokenHandler
+builder.Services.AddTransient<AuthTokenHandler>();
+
+// Register HttpClient and use AuthTokenHandler
+builder.Services.AddHttpClient("MyHttpClient")
+        .AddHttpMessageHandler<AuthTokenHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

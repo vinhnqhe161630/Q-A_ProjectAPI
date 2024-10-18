@@ -1,4 +1,19 @@
 ﻿@model IEnumerable<PRN231_ProjectQA_MVC.Models.Post.PostModel>
+
+
+<style>
+    .card-question {
+        position: relative; /* Set relative position to parent for absolute positioning inside */
+        padding: 10px; /* Add padding to the card as needed */
+    }
+
+    .card-hide {
+        position: absolute; /* Position the icon absolutely within the card */
+        top: 10px; /* Position it from the top */
+        right: 10px; /* Position it from the right */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+</style>
 <body>
     <div class="app">
         <div class="header" id="header">
@@ -131,9 +146,29 @@
                                 @foreach (var item in Model)
                                 {
                                     <div class="card p-1">
-                                        <div class="card-question">
-                                            <a href="/Post/Details?id=@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                                        <div class="card-question" style="position: relative;">
+                                            <a href="answer.html">@item.Title</a>
+                                            @if (ViewBag.userId == item.UserId.ToString())
+                                            {
+                                                <div class="card-hide" id="card-hide-@item.Id" data-item-id="@item.Id">
+                                                    <i class="fa fa-ellipsis-h"></i>
+                                                </div>
+                                            }
                                         </div>
+
+                                        @if (ViewBag.userId == item.UserId.ToString())
+                                        {
+                                            <div class="card-drop" id="card-drop-@item.Id" style="display: none;">
+                                                <a class="" href="@Url.Action("Edit", "Post", new { id = item.Id })"><i class="fa fa-pencil"></i> Edit Question</a>
+                                                <a class="delete-link"
+                                                   href="@Url.Action("Delete", "Post", new { id = item.Id })"
+                                                   onclick="return confirm('Are you sure you want to delete this question?');">
+                                                    <i class="fa fa-times"></i> Delete Question
+                                                </a>
+                                              
+                                            </div>
+                                        }
+
                                         <div class="justify-content-start">
                                             <div class="card-user">
                                                 <img class="avatar" src="@item.UserImg">
@@ -141,122 +176,155 @@
                                             <div class="card-user__job flex">
                                                 <span class="pl-2">@Html.DisplayFor(modelItem => item.Username)</span>
                                                 <span>
-
                                                     <small class="text-grey">@item.CreatedAt?.Substring(0, 10)</small>
-
                                                 </span>
                                             </div>
                                         </div>
+
                                         <div class="card-description">
                                             <p>
                                                 @Html.DisplayFor(modelItem => item.Content1)
                                                 <a href="/Post/Details?id=@item.Id" class="card-description__link">Read more <i class="fa fa-angle-double-right"></i></a>
                                             </p>
                                         </div>
+
                                         <div class="card-reaction justify-content-space-between">
-                                            @* <div class="card-views">
-                                    <div class="card-btn">
-                                    <span>63</span> <i class="fa fa-eye"></i>
-                                    </div>
-                                    </div> *@
                                             <div class="card-answer ml-2">
                                                 <div class="card-btn">
                                                     <span>@Html.DisplayFor(modelItem => item.TotalComment) Answers</span> <i class="fa fa-pencil"></i>
                                                 </div>
                                             </div>
-                                           
                                         </div>
                                     </div>
                                 }}
-                            </div>
-                            <div class="col-3">
-                                <div class="right-card">
-                                    <span>Top Contributors</span>
-                                    <p>Lorem ipsum dolor sit amet consectetur.</p>
-                                    <div class="top-contributor">
-                                        <div>
-                                            <img class="avatar-sm" src="./assets/images/girl.png">
-                                        </div>
-                                        <span class="flex">Edwin Ada</span>
-                                        <div class="flex">
-                                            <span> <i class="fa fa-comment-o"></i> 439</span>
-                                        </div>
+                           
+                           
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    // Lấy tất cả các phần tử .card-hide
+                                    const cardHides = document.querySelectorAll('.card-hide');
+
+                                  
+
+                                    // Xử lý cho các phần tử còn lại
+                                    cardHides.forEach(function (element, index) {
+                                        if (index > 0) { // Bỏ qua phần tử đầu tiên
+                                            element.addEventListener('click', function () {
+                                                const itemId = this.getAttribute('data-item-id');
+                                                const dropdown = document.getElementById('card-drop-' + itemId);
+
+                                              
+
+                                                // Toggle hiển thị của dropdown cho các phần tử còn lại
+                                                if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                                                    dropdown.style.display = 'block';
+                                                  
+                                                } else {
+                                                    dropdown.style.display = 'none';
+                                                
+                                                }
+                                            });
+                                        }
+                                    });
+                                });
+
+                                </script>
+
+                        </div>
+                        <div class="col-3">
+                            <div class="right-card">
+                                <span>Top Contributors</span>
+                                
+                                <div class="top-contributor">
+                                    <div>
+                                        <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocJoCoOilyj6pXBYbLrB8qDqSoMIzNCew2t5b0S7rr_eumT-mCI=s96-c">
                                     </div>
-                                    <div class="top-contributor">
-                                        <div>
-                                            <img class="avatar-sm" src="./assets/images/boy.png">
-                                        </div>
-                                        <span class="flex">Sullivan</span>
-                                        <div class="flex">
-                                            <span> <i class="fa fa-comment-o"></i> 439</span>
-                                        </div>
+                                    <span class="flex">Vinh Quang</span>
+                                    <div class="flex">
+                                        <span> <i class="fa fa-comment-o"></i> 30</span>
                                     </div>
-                                    <div class="top-contributor">
-                                        <div>
-                                            <img class="avatar-sm" src="./assets/images/girl.png">
-                                        </div>
-                                        <span class="flex">Henzem</span>
-                                        <div class="flex">
-                                            <span> <i class="fa fa-comment-o"></i> 439</span>
-                                        </div>
+                                </div>
+                                <div class="top-contributor">
+                                    <div>
+                                        <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocJhfQvteYErVi6hxFWz7KRgLbbQpidAdAuI-b38E0WYR_qg2w=s96-c">
+                                    </div>
+                                    <span class="flex">Nguyễn Vinh</span>
+                                    <div class="flex">
+                                        <span> <i class="fa fa-comment-o"></i> 21</span>
+                                    </div>
+                                </div>
+                                <div class="top-contributor">
+                                    <div>
+                                        <img class="avatar-sm" src="https://lh3.googleusercontent.com/a/ACg8ocK7O4mpbea8caWIxtBzG5Ll_qoTtvd4MHUIxyZWnQiKlr0d7ONb=s96-c">
+                                    </div>
+                                    <span class="flex">Nguyễn An</span>
+                                    <div class="flex">
+                                        <span> <i class="fa fa-comment-o"></i> 12</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
-        <section>
-            <div class="shelter">
-                <div>
-                    <div class="columns">
-                        <div class="col-4"></div>
-                                                @{
-                                                    var max = ViewBag.pageLength;
-                                                    var page = ViewBag.page;
-                                                    var next = page + 1;
-                                                    var pre = page - 1;
+            </div>
+        </section>
+    </div>
+    <section>
+        <div class="shelter">
+            <div>
+                <div class="columns">
+                    <div class="col-4"></div>
+                    @{
+                        var max = ViewBag.pageLength;
+                        var page = ViewBag.page;
+                        var next = page + 1;
+                        var pre = page - 1;
 
-                                                }
-                        <div class="col-8">
-                            <div class="pagination">
-                                                        @if (page > 1)
-                                                        {
-                                    <a href="?page=@pre&search=@ViewBag.searchString">&laquo;</a>
+                    }
+                    <div class="col-8">
+                        <div class="pagination">
+                            @if (page > 1)
+                            {
+                                <a href="?page=@pre&search=@ViewBag.searchString">&laquo;</a>
 
-                                                        }
+                            }
 
-                                                        @for (int i = 1; i <= max; i++)
-                                                        {
-                                                            @if (page == i)
-                                                            {
-                                        <a href="?page=@i&search=@ViewBag.searchString" class="activve">@i</a>
-                                                            }
-                                                            else
+                            @for (int i = 1; i <= max; i++)
+                            {
+                                @if (page == i)
+                                {
+                                    <a href="?page=@i&search=@ViewBag.searchString" class="activve">@i</a>
+                                }
+                                else
 
-                                                            {
-                                        <a href="?page=@i&search=@ViewBag.searchString">@i</a>
-                                                            }
+                                {
+                                    <a href="?page=@i&search=@ViewBag.searchString">@i</a>
+                                }
 
-                                                        }
-                                                        @if (page < max)
-                                                        {
-                                    <a href="?page=@next&search=@ViewBag.searchString">&raquo;</a>
+                            }
+                            @if (page < max)
+                            {
+                                <a href="?page=@next&search=@ViewBag.searchString">&raquo;</a>
 
-                                                        }
+                            }
 
 
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        </section>
-      
+    </section>
 
-        <script src="./assets/js/main.js"></script>
-        <script src="./assets/js/modal.js"></script>
-    </body>
+
+
+
+
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/modal.js"></script>
+
+
+
+</body>
     </html>

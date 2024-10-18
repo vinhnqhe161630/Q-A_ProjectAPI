@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PRN231_ProjectQA_Data.Entities;
@@ -40,6 +41,7 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
             return Ok();
         }
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> AddCommentAsync(AddCommentModel commentModel)
         {
             var comment = _mapper.Map<Comment>(commentModel);
@@ -47,12 +49,14 @@ namespace PRN231_ProjectQA_WebAPI.Controllers
             return Ok();
         }
         [HttpDelete("{commentId}")]
+        [Authorize]
         public async Task<ActionResult> DeleteComment(Guid commentId)
         {
             await commentService.DeleteComment(commentId);
             return Ok();
         }
         [HttpPost("AnswerComment")]
+        [Authorize]
         public async Task<ActionResult> AddAnswercomment(AddAnswerCommentmodel answerModel)
         {
             var answercomment = _mapper.Map<AnswerComment>(answerModel);

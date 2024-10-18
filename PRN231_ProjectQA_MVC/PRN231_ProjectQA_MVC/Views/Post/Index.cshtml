@@ -1,4 +1,19 @@
 ﻿@model IEnumerable<PRN231_ProjectQA_MVC.Models.Post.PostModel>
+
+    <style>
+
+    .card-question {
+        position: relative; /* Set relative position to parent for absolute positioning inside */
+        padding: 10px; /* Add padding to the card as needed */
+    }
+
+    .card-hide {
+        position: absolute; /* Position the icon absolutely within the card */
+        top: 10px; /* Position it from the top */
+        right: 10px; /* Position it from the right */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+    </style>
 <body>
     <div class="app">
         <div class="header" id="header">
@@ -112,7 +127,20 @@
                                     <div class="card p-1">
                                         <div class="card-question">
                                             <a href="/Post/Details?id=@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                                            @if (ViewBag.userId == item.UserId.ToString())
+                                            {
+                                                <div class="card-hide" id="card-hide-@item.Id" data-item-id="@item.Id">
+                                                    <i class="fa fa-ellipsis-h"></i>
+                                                </div>
+                                            }
                                         </div>
+                                        @if (ViewBag.userId == item.UserId.ToString())
+                                        {
+                                            <div class="card-drop" id="card-drop-@item.Id" style="display: none;">
+                                                <a class="" href="@Url.Action("Edit", "Post", new {id=item.Id})"><i class="fa fa-pencil"></i> Edit Question</a>
+                                                <a class="" href="@Url.Action("Delete", "Post", new {id=item.Id})"><i class="fa fa-times"></i> Delete Question</a>
+                                            </div>
+                                        }
                                         <div class="justify-content-start">
                                             <div class="card-user">
                                                 <img class="avatar" src="@item.UserImg">
@@ -196,12 +224,40 @@
                     </div>
                 </div>
             </div>
-            <div class="footer">
-                <p class="text-center">Ukaegbu Sullivan Wisdom...Cycle 35 &copy; 2018</p>
-            </div>
+         
         </section>
     </div>
- 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Lấy tất cả các phần tử .card-hide
+            const cardHides = document.querySelectorAll('.card-hide');
+
+
+
+            // Xử lý cho các phần tử còn lại
+            cardHides.forEach(function (element, index) {
+                if (index > 0) { // Bỏ qua phần tử đầu tiên
+                    element.addEventListener('click', function () {
+                        const itemId = this.getAttribute('data-item-id');
+                        const dropdown = document.getElementById('card-drop-' + itemId);
+
+
+
+                        // Toggle hiển thị của dropdown cho các phần tử còn lại
+                        if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                            dropdown.style.display = 'block';
+
+                        } else {
+                            dropdown.style.display = 'none';
+
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
     <script src="./assets/js/main.js"></script>
     <script src="./assets/js/modal.js"></script>
 </body>

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using PRN231_ProjectQA_MVC.Models;
 using PRN231_ProjectQA_MVC.Models.Post;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PRN231_ProjectQA_MVC.Controllers
 {
@@ -50,6 +51,9 @@ namespace PRN231_ProjectQA_MVC.Controllers
            
 
                 ViewBag.page = page;
+
+                var userId = GetUserIdToken();
+                ViewBag.userId = userId;    
                 return View(posts);
 
             }
@@ -65,6 +69,21 @@ namespace PRN231_ProjectQA_MVC.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string GetUserIdToken()
+        {
+            var token = Request.Cookies["AuthToken"];
+            if(token == null)
+            {
+                return null;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "userId")?.Value;
+            return userIdClaim;
+
         }
     }
 }

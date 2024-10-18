@@ -28,11 +28,16 @@ namespace PRN231_ProjectQA_WebAPI.Helpers
             CreateMap<User, AddUserModel>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.Username))
 
-                .ForMember(dest => dest.DOB, opt => opt.MapFrom(src => src.DOB))
+
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
 
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
-            CreateMap<Post, PostModel>();
+            CreateMap<Post, PostModel>()
+                    .ForMember(dest => dest.TotalComment, opt => opt.MapFrom(src => src.Comments.Count))
+                        .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username))
+                            .ForMember(dest => dest.UserImg, opt => opt.MapFrom(src => src.User.Img));
+
+
             CreateMap<PostModel, Post>();
             CreateMap<Post, PostDetailsModel>()
                 .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.Username))

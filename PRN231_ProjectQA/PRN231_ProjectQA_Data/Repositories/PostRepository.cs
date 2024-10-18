@@ -22,7 +22,8 @@ namespace PRN231_ProjectQA_Data.Repositories
             return await _context.Posts
                 .Include(p => p.User)   
                 .Include(p => p.Comments)
-              .Where(p => p.UserId == userId).ToListAsync();
+              .Where(p => p.UserId == userId)
+              .OrderByDescending(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task AddNewPost(Post post)
@@ -52,11 +53,22 @@ namespace PRN231_ProjectQA_Data.Repositories
 
         public async Task DeletePost(Guid id)
         {
-         var post = await _context.Posts.FindAsync(id);
+            var post = await _context.Posts
+          .Include(p => p.Comments)          
+          .ThenInclude(c => c.Answers)        
+          .FirstOrDefaultAsync(p => p.Id == id); 
+
             if (post == null)
             {
                 throw new Exception("Post not found.");
             }
+
+            foreach (var comment in post.Comments)
+            {
+                _context.AnswerComments.RemoveRange(comment.Answers); 
+            }
+
+            _context.Comments.RemoveRange(post.Comments);
 
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
@@ -67,10 +79,27 @@ namespace PRN231_ProjectQA_Data.Repositories
             return await _context.Posts.
                 Include(p => p.User)
                 .Include(p => p.Comments)
-               .ToListAsync();    
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+           
+            
 
         }
+        public async Task UpdatePost(Post post)
+        {
+            var postToUpdate = await _context.Posts.FindAsync(post.Id);
+            if (postToUpdate == null)
+            {
+                throw new Exception("Post not found.");
+            }
 
+            postToUpdate.Title = post.Title;
+            postToUpdate.Content1 = post.Content1;
+            postToUpdate.Content2 = post.Content2;
+            postToUpdate.Image1 = post.Image1;
+            postToUpdate.Image2 = post.Image2;
+            await _context.SaveChangesAsync();
+        }
 
 
         public async Task<Post> GetPostById(Guid id)

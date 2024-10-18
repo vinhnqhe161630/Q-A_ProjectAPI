@@ -103,7 +103,7 @@ namespace PRN231_ProjectQA_Data.Repositories
             return await context.Comments
                 .Include(c => c.Answers)
                 .Include(c => c.User)
-                .Where(c => c.PostId == postId)
+                .Where(c => c.PostId == postId).OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 
         }

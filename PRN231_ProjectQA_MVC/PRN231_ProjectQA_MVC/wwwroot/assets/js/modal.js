@@ -9,9 +9,6 @@ function openModal() {
 function closeModal() {
   modal.style.display = 'none';
 }
-function eventListener() {
-  modalBtn.addEventListener('click', openModal);
-  closeBtn.addEventListener('click', closeModal);
-}
+
 
 eventListener();
