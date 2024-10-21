@@ -423,7 +423,7 @@
         </section> 
     </div>
     <script src="./assets/js/main.js"></script>
-    <script src="./assets/js/dropdown.js"></script>
+  
     <script src="./assets/js/modal.js"></script>
    
 
@@ -437,7 +437,7 @@
 
             // Xử lý cho các phần tử còn lại
             cardHides.forEach(function (element, index) {
-                if (index > 0) { // Bỏ qua phần tử đầu tiên
+                if (index >= 0) { // Bỏ qua phần tử đầu tiên
                     element.addEventListener('click', function () {
                         const itemId = this.getAttribute('data-item-id');
                         const dropdown = document.getElementById('commentBox-' + itemId);
